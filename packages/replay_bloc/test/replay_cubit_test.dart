@@ -181,6 +181,27 @@ void main() {
         expect(states, const <int>[1, 2, 3, 4, 3]);
       });
 
+      test('trims history to a lowered limit on redo', () async {
+        final states = <int>[];
+        final cubit = CounterCubit();
+        final subscription = cubit.stream.listen(states.add);
+        cubit
+          ..increment()
+          ..increment()
+          ..increment()
+          ..undo()
+          ..undo()
+          ..limit = 1
+          ..redo()
+          ..redo()
+          ..undo()
+          ..undo()
+          ..undo();
+        await cubit.close();
+        await subscription.cancel();
+        expect(states, const <int>[1, 2, 3, 2, 1, 2, 3, 2]);
+      });
+
       test('reverts to initial state', () async {
         final states = <int>[];
         final cubit = CounterCubit();

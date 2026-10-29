@@ -48,6 +48,7 @@ class _ChangeStack<T> {
     if (canRedo) {
       final change = _redos.removeFirst();
       _history.addLast(change);
+      _trimHistory();
       return _shouldReplay(change._newValue) ? change.execute() : redo();
     }
   }
